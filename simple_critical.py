@@ -61,7 +61,8 @@ for i in range(5):
 
 # Draw posterior samples
 N_posterior_samples = 10
-KL = ift.MetricGaussianKL(mean, H, N_posterior_samples)
+KL = ift.MetricGaussianKL(mean, H, N_posterior_samples,
+                          mirror_samples=True)
 sc = ift.StatCalculator()
 sky_samples = []
 for sample in KL.samples:
@@ -69,10 +70,12 @@ for sample in KL.samples:
     sc.add(tmp)
     sky_samples += [tmp]
 
-# Plotting
-plot = ift.Plot()
-plot.add([sc.mean, R.adjoint(data)]+sky_samples, alpha = [1., 1.] + [0.4]*N_posterior_samples, ymin = -1.4459574, ymax = 1.956656)
-plot.output(xsize=10, ysize=6 , name='results_signal.pdf')
+from plotting_aachen import plot
+mock = np.load('signal_2.npy')
+mock = ift.from_global_data(space,mock)
+plot('results_signal',sc.mean,data,mock,sky_samples)
+
+
 
 from generate_data import mystery_spec
 actual_pow = ift.PS_field(A.target[0], mystery_spec)
