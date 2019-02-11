@@ -61,8 +61,7 @@ for i in range(5):
 
 # Draw posterior samples
 N_posterior_samples = 10
-KL = ift.MetricGaussianKL(mean, H, N_posterior_samples,
-                          mirror_samples=True)
+KL = ift.MetricGaussianKL(mean, H, N_posterior_samples)
 sc = ift.StatCalculator()
 sky_samples = []
 for sample in KL.samples:
@@ -70,7 +69,7 @@ for sample in KL.samples:
     sc.add(tmp)
     sky_samples += [tmp]
 
-from plotting_aachen import plot
+from plotting_aachen import plot,power_plot
 mock = np.load('signal_2.npy')
 mock = ift.from_global_data(space,mock)
 plot('results_signal',sc.mean,data,mock,sky_samples)
@@ -80,10 +79,8 @@ plot('results_signal',sc.mean,data,mock,sky_samples)
 from generate_data import mystery_spec
 actual_pow = ift.PS_field(A.target[0], mystery_spec)
 powers = [A.force(s + KL.position)**2 for s in KL.samples]
-plot = ift.Plot()
-plot.add(
-    [A.force(KL.position)**2,
-                actual_pow] + powers,
-    title="Sampled Posterior Power Spectrum",
-    alpha = [1,1] + [0.3]*N_posterior_samples)
-plot.output(name='results_power.pdf')
+pm = 0.
+for p in powers:
+    pm = pm + p
+pm = pm / len(powers)
+power_plot('results_power',actual_pow,pm,powers)

@@ -29,3 +29,20 @@ def plot(name,m,d,mock,samples=None):
     ymax = np.max(d.to_global_data()) + 0.1
     plt.axis((x1,x2,ymin,ymax))
     plt.savefig(name+".pdf",dpi=300)
+    
+def power_plot(name,s,m,samples=None):
+    plt.figure(figsize=(15,8))
+    ks = s.domain[0].k_lengths
+    plt.xscale("log")
+    plt.yscale("log")
+    plt.plot(ks,s.to_global_data(),'g-',label="true spectrum")
+    plt.plot(ks,m.to_global_data(),'r-',label="rec. spectrum")
+    if samples is not None:
+       for i in range(len(samples)):
+           if i==0:
+               lgd = "samples"
+           else:
+               lgd = None
+           plt.plot(ks,samples[i].to_global_data(),'k-',alpha=0.3,label=lgd)
+    plt.legend()
+    plt.savefig(name+".pdf",dpi=300)
