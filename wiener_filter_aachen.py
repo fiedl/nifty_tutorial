@@ -28,6 +28,12 @@ D = ift.InversionEnabler(D_inv.inverse, IC, approximation=S)
 
 m = D(j)
 
+S = ift.SandwichOperator.make(HT.adjoint, S_h)
+D = ift.WienerFilterCurvature(R, N , S, IC, IC).inverse
+N_samples = 10
+samples = [D.draw_sample()+m for i in range(N_samples)]
+
 plot = ift.Plot()
-plot.add([m, R.adjoint(data)], label=['m','d'])
+plot.add([m, R.adjoint(data)] + samples, alpha = [1,1]+[0.3]*N_samples)
 plot.output()
+
