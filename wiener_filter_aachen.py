@@ -35,5 +35,5 @@ samples = [D.draw_sample()+m for i in range(N_samples)]
 
 plot = ift.Plot()
 plot.add([m, R.adjoint(data)] + samples, alpha = [1,1]+[0.3]*N_samples)
-plot.output()
+plot.output(name='result.pdf')
 
