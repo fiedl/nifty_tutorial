@@ -1,3 +1,6 @@
 Skripte die nach Aachen geschickt wqerden sollen:
 
 generate_data.py (auch ausfuehren)
+
+Ausserdem:
+Brauchen das git-repo im working directory
