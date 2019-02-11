@@ -2,7 +2,6 @@ import nifty5 as ift
 import numpy as np
 
 np.random.seed(42)
-num=1
 
 # want to implement: m = Dj = (S^{-1} + R^T N^{-1} R)^{-1} R^T N^{-1} d
 
@@ -14,8 +13,8 @@ R = ift.GeometryRemover(space)
 data_space = R.target
 N = ift.ScalingOperator(0.1, data_space)
 
-data = np.load('data_'+str(num)+'.npy')
-data = ift.from_global_data(data_space, data) 
+data = np.load('data_1.npy')
+data = ift.from_global_data(data_space, data)
 
 def prior_spectrum(k):
     return 1/(10.+k**2)
@@ -31,13 +30,15 @@ D = ift.InversionEnabler(D_inv.inverse, IC, approximation=S)
 
 m = D(j)
 
+from plotting_aachen import plot
+
+truth = np.load('signal_1.npy')
+truth = ift.from_global_data(space, truth)
+plot('result',m,data,truth)
+
 S = ift.SandwichOperator.make(HT.adjoint, S_h)
 D = ift.WienerFilterCurvature(R, N , S, IC, IC).inverse
 N_samples = 10
 samples = [D.draw_sample()+m for i in range(N_samples)]
 
-from plotting_aachen import plot
-
-mock = np.load('signal_'+str(num)+'.npy')
-mock = ift.from_global_data(space, mock) 
-plot('result',m,data,mock,samples)
+plot('result_with_unc',m,data,truth,samples)
