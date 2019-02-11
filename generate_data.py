@@ -4,7 +4,7 @@ import nifty5 as ift
 np.random.seed(42)
 
 def prior_spec(k):
-    return 1/(10.+k**4)
+    return 1/(10.+k**2)
 
 m = 7
 b = 3
@@ -16,7 +16,7 @@ space = ift.RGSpace(256)
 harmonic_space = space.get_default_codomain()
 
 HT = ift.HartleyOperator(harmonic_space, target=space)
-N = ift.ScalingOperator(0.01, space)
+N = ift.ScalingOperator(0.1, space)
 S_k = ift.create_power_operator(harmonic_space, mystery_spec)
 s = HT(S_k.draw_sample())
 d = s + N.draw_sample()

@@ -9,13 +9,13 @@ harmonic_space = space.get_default_codomain()
 HT = ift.HartleyOperator(harmonic_space, target=space)
 R = ift.GeometryRemover(space)
 data_space = R.target
-N = ift.ScalingOperator(0.01, data_space)
+N = ift.ScalingOperator(0.1, data_space)
 
 data = np.load('data_1.npy')
 data = ift.from_global_data(data_space, data) 
 
 def prior_spectrum(k):
-    return 1/(10.+k**4)
+    return 1/(10.+k**2)
 
 S_h = ift.create_power_operator(harmonic_space, prior_spectrum)
 S = HT @ S_h @ HT.adjoint
@@ -30,4 +30,4 @@ m = D(j)
 
 plot = ift.Plot()
 plot.add([m, R.adjoint(data)], label=['m','d'])
-plot.output(nx=2)
+plot.output()
