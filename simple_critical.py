@@ -63,11 +63,16 @@ for i in range(5):
 N_posterior_samples = 10
 KL = ift.MetricGaussianKL(mean, H, N_posterior_samples)
 sc = ift.StatCalculator()
+sc_pow = ift.StatCalculator()
 sky_samples = []
+powers = []
 for sample in KL.samples:
     tmp = correlated_field(sample + KL.position)
     sc.add(tmp)
+    power_samp = A.force(sample + KL.position)**2
+    sc_pow.add(power_samp)
     sky_samples += [tmp]
+    powers += [power_samp]
 
 from plotting_aachen import plot,power_plot
 mock = np.load('signal_2.npy')
@@ -78,9 +83,4 @@ plot('results_signal',sc.mean,data,mock,sky_samples)
 
 from generate_data import mystery_spec
 actual_pow = ift.PS_field(A.target[0], mystery_spec)
-powers = [A.force(s + KL.position)**2 for s in KL.samples]
-pm = 0.
-for p in powers:
-    pm = pm + p
-pm = pm / len(powers)
-power_plot('results_power',actual_pow,pm,powers)
+power_plot('results_power',actual_pow,sc_pow.mean,powers)

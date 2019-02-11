@@ -27,7 +27,9 @@ def plot(name,m,d,mock,samples=None):
     x1, x2, y1, y2 = plt.axis()
     ymin = np.min(d.to_global_data()) - 0.1
     ymax = np.max(d.to_global_data()) + 0.1
-    plt.axis((x1,x2,ymin,ymax))
+    xmin = np.min(xcoord)
+    xmax = np.max(xcoord)
+    plt.axis((xmin,xmax,ymin,ymax))
     plt.savefig(name+".pdf",dpi=300)
     
 def power_plot(name,s,m,samples=None):
