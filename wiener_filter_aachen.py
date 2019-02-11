@@ -11,7 +11,7 @@ R = ift.GeometryRemover(space)
 data_space = R.target
 N = ift.ScalingOperator(0.1, data_space)
 
-data = np.load('data_1.npy')
+data = np.load('data_2.npy')
 data = ift.from_global_data(data_space, data) 
 
 def prior_spectrum(k):
@@ -34,6 +34,6 @@ N_samples = 10
 samples = [D.draw_sample()+m for i in range(N_samples)]
 
 plot = ift.Plot()
-plot.add([m, R.adjoint(data)] + samples, alpha = [1,1]+[0.3]*N_samples)
+plot.add([m, R.adjoint(data)] + samples, alpha = [1,1]+[0.4]*N_samples)
 plot.output(name='result.pdf')
 
