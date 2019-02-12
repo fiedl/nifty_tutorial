@@ -11,18 +11,16 @@ harmonic_space = space.get_default_codomain()
 HT = ift.HartleyOperator(harmonic_space, target=space)
 R = ift.GeometryRemover(space)
 data_space = R.target
-N = ift.ScalingOperator(0.1, data_space)
 
-data = np.load('data_2.npy')
-data = ift.from_global_data(data_space, data) 
 power_space = ift.PowerSpace(harmonic_space)
 
 # Set up an amplitude operator for the field
+# We want to set up a model for the amplitude spectrum with some magic numbers
 dct = {
     'target': power_space,
     'n_pix': 64,  # 64 spectral bins
     # Spectral smoothness (affects Gaussian process part)
-    'a': 10,  # relatively high variance of spectral curbvature
+    'a': 10,  # relatively high variance of spectral curvature
     'k0': .2,  # quefrency mode below which cepstrum flattens
     # Power-law part of spectrum:
     'sm': -4,  # preferred power-law slope
@@ -33,6 +31,8 @@ dct = {
 A = ift.SLAmplitude(**dct)
 
 correlated_field = ift.CorrelatedField(space, A)
+# interactive plotting
+# plotting correlated_field(ift.from_random('normal',correlated_field.target))
 
 signal_response = R(correlated_field)
 
@@ -43,6 +43,11 @@ ic_newton = ift.GradInfNormController(
 minimizer = ift.NewtonCG(ic_newton)
 
 # Set up likelihood and information Hamiltonian
+N = ift.ScalingOperator(0.1, data_space)
+
+data = np.load('data_2.npy')
+data = ift.from_global_data(data_space, data)
+
 likelihood = ift.GaussianEnergy(mean=data, covariance=N)(signal_response)
 H = ift.StandardHamiltonian(likelihood, ic_sampling)
 
@@ -50,12 +55,12 @@ initial_mean = ift.MultiField.full(H.domain, 0.)
 mean = initial_mean
 
 # number of samples used to estimate the KL
-N_samples = 3
+N_samples = 5
 
 # Draw new samples to approximate the KL five times
 for i in range(5):
     # Draw new samples and minimize KL
-    KL = ift.MetricGaussianKL(mean, H, N_samples, mirror_samples=True)
+    KL = ift.MetricGaussianKL(mean, H, N_samples)
     KL, convergence = minimizer(KL)
     mean = KL.position
 
