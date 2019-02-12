@@ -3,11 +3,24 @@ import nifty5 as ift
 
 np.random.seed(42)
 
-def generate_Poisson_data(signal_response):
-    synthetic_position = ift.from_random('normal',signal_response.domain)
+
+def generate_gaussian_data(signal_response, noise_covariance):
+    mock_position = ift.from_random('normal', signal_response.domain)
+    return signal_response(mock_position) + noise_covariance.draw_sample()
+
+
+def generate_poisson_data(signal_response):
+    synthetic_position = ift.from_random('normal', signal_response.domain)
     rate = signal_response(synthetic_position).val
     data = np.random.poisson(rate)
-    return ift.from_global_data(signal_response.target,data)
+    return ift.from_global_data(signal_response.target, data)
+
+
+def generate_bernoulli_data(signal_response):
+    synthetic_position = ift.from_random('normal', signal_response.domain)
+    rate = signal_response(synthetic_position).val
+    data = np.random.binomial(1, rate)
+    return ift.from_global_data(signal_response.target, data)
 
 if __name__ == '__main__':
     def prior_spec(k):
