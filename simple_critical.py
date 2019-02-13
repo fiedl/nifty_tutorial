@@ -8,9 +8,7 @@ np.random.seed(42)
 space = ift.RGSpace(256)
 harmonic_space = space.get_default_codomain()
 
-HT = ift.HartleyOperator(harmonic_space, target=space)
-R = ift.GeometryRemover(space)
-data_space = R.target
+HT = ift.HarmonicTransformOperator(harmonic_space, target=space)
 
 power_space = ift.PowerSpace(harmonic_space)
 
@@ -34,13 +32,13 @@ correlated_field = ift.CorrelatedField(space, A)
 # interactive plotting
 # plotting correlated_field(ift.from_random('normal',correlated_field.target))
 
+
+R = ift.GeometryRemover(space)
+data_space = R.target
+
+
 signal_response = R(correlated_field)
 
-# Minimization parameters
-ic_sampling = ift.GradientNormController(iteration_limit=60)
-ic_newton = ift.GradInfNormController(
-    name='Newton', tol=1e-6, iteration_limit=20)
-minimizer = ift.NewtonCG(ic_newton)
 
 # Set up likelihood and information Hamiltonian
 N = ift.ScalingOperator(0.1, data_space)
@@ -49,6 +47,14 @@ data = np.load('data_2.npy')
 data = ift.from_global_data(data_space, data)
 
 likelihood = ift.GaussianEnergy(mean=data, covariance=N)(signal_response)
+
+
+#### SOLVING PROBLEM ####
+ic_sampling = ift.GradientNormController(iteration_limit=60)
+ic_newton = ift.GradInfNormController(
+    name='Newton', tol=1e-6, iteration_limit=20)
+minimizer = ift.NewtonCG(ic_newton)
+
 H = ift.StandardHamiltonian(likelihood, ic_sampling)
 
 initial_mean = ift.MultiField.full(H.domain, 0.)
