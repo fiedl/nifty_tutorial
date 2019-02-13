@@ -4,6 +4,7 @@ import numpy as np
 import nifty5 as ift
 from responses import *
 from generate_data import generate_poisson_data
+from plotting_2d import *
 
 
 np.random.seed(42)
@@ -22,11 +23,11 @@ dct = {
     'n_pix': 64,  # 64 spectral bins
     # Spectral smoothness (affects Gaussian process part)
     'a': 10,  # relatively high variance of spectral curvature
-    'k0': .2,  # quefrency mode below which cepstrum flattens
+    'k0': .3,  # quefrency mode below which cepstrum flattens
     # Power-law part of spectrum:
-    'sm': -2,  # preferred power-law slope
+    'sm': -3,  # preferred power-law slope
     'sv': .6,  # low variance of power-law slope
-    'im':  -6,  # y-intercept mean, in-/decrease for more/less contrast
+    'im':  -4,  # y-intercept mean, in-/decrease for more/less contrast
     'iv': 2.   # y-intercept variance
 }
 A = ift.SLAmplitude(**dct)
@@ -37,21 +38,25 @@ correlated_field = ift.CorrelatedField(position_space, A)
 
 ### SETTING UP SPECIFIC SCENARIO ####
 
-signal = correlated_field.sigmoid()
+signal = correlated_field.exp()
 
-R = psf_response(position_space)
+R = exposure_response(position_space)
 signal_response = R(signal)
 
 data_space = R.target
-data = generate_poisson_data(signal_response)
-# Set up likelihood and information Hamiltonian
+data, ground_truth = generate_poisson_data(signal_response)
+
 likelihood = ift.PoissonianEnergy(data)(signal_response)
+
+### PLOT PRIOR SAMPLES ###
+plot_prior_samples_2d(5, signal, R, correlated_field, A, 'poisson')
+
 
 ######## SOLVING PROBLEM ########
 # Minimization parameters
-ic_sampling = ift.GradientNormController(iteration_limit=60)
+ic_sampling = ift.GradientNormController(iteration_limit=100)
 ic_newton = ift.GradInfNormController(
-    name='Newton', tol=1e-6, iteration_limit=20)
+    name='Newton', tol=1e-6, iteration_limit=30)
 minimizer = ift.NewtonCG(ic_newton)
 
 
@@ -69,14 +74,10 @@ for i in range(5):
     KL, convergence = minimizer(KL)
     mean = KL.position
 
-# Draw posterior samples
-N_posterior_samples = 10
+### PLOT RESULTS ###
+N_posterior_samples = 30
 KL = ift.MetricGaussianKL(mean, H, N_posterior_samples)
-sc = ift.StatCalculator()
-sky_samples = []
-for sample in KL.samples:
-    tmp = correlated_field(sample + KL.position)
-    sc.add(tmp)
-    sky_samples += [tmp]
+plot_reconstruction_2d(data, ground_truth, KL, signal, R, A)
+
 
 

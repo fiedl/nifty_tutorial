@@ -3,29 +3,29 @@ import numpy as np
 import matplotlib.pylab as pl
 
 
-def plot_prior_samples_2d(n_samps, signal, response, correlated_field, amplitude, likelihood, noise_covariance=None):
+def plot_prior_samples_2d(n_samps, signal, R, correlated_field, A, likelihood, N=None):
     fig, ax = pl.subplots(nrows=n_samps, ncols=5, figsize=(2*5, 2*n_samps, ))
     for s in range(n_samps):
         sample = ift.from_random('normal', signal.domain)
         cf = correlated_field(sample)
-        signal_response = response(signal)
+        signal_response = R(signal)
         sg = signal(sample)
-        sr = response.adjoint(response(signal(sample)))
-        pow = amplitude.force(sample)
+        sr = R.adjoint(R(signal(sample)))
+        pow = A.force(sample)
         if likelihood == 'gauss':
-            synthetic_position = ift.from_random('normal', signal_response.domain)
-            data = signal_response(synthetic_position) + noise_covariance.draw_sample()
+            ground_truth = ift.from_random('normal', signal_response.domain)
+            data = signal_response(ground_truth) + N.draw_sample()
         elif likelihood == 'poisson':
-            synthetic_position = ift.from_random('normal', signal_response.domain)
-            rate = signal_response(synthetic_position).val
+            ground_truth = ift.from_random('normal', signal_response.domain)
+            rate = signal_response(ground_truth).val
             data = ift.from_global_data(signal_response.target, np.random.poisson(rate))
         elif likelihood == 'bernoulli':
-            synthetic_position = ift.from_random('normal', signal_response.domain)
-            rate = signal_response(synthetic_position).val
+            ground_truth = ift.from_random('normal', signal_response.domain)
+            rate = signal_response(ground_truth).val
             data = ift.from_global_data(signal_response.target, np.random.binomial(1, rate))
         else:
             raise ValueError('likelihood type not implemented')
-        data = response.adjoint(data)
+        data = R.adjoint(data + 0.)
 
         ax[s, 0].plot(pow.domain[0].k_lengths, pow.val)
         ax[s, 0].set_yscale('log')
@@ -60,10 +60,11 @@ def plot_prior_samples_2d(n_samps, signal, response, correlated_field, amplitude
 
     pl.tight_layout()
     pl.savefig('prior_samples_' + likelihood + '.png')
+    pl.close('all')
     return
 
 
-def plot_reconstruction_2d(data, truth, KL, signal, response, amplitude):
+def plot_reconstruction_2d(data, ground_truth, KL, signal, R, A):
     from mpl_toolkits.axes_grid1 import make_axes_locatable
 
     sc = ift.StatCalculator()
@@ -71,7 +72,7 @@ def plot_reconstruction_2d(data, truth, KL, signal, response, amplitude):
     amp_samples = []
     for sample in KL.samples:
         tmp = signal(sample + KL.position)
-        pow = amplitude.force(sample)
+        pow = A.force(sample)
         sc.add(tmp)
         sky_samples += [tmp]
         amp_samples += [pow]
@@ -79,26 +80,30 @@ def plot_reconstruction_2d(data, truth, KL, signal, response, amplitude):
     pl.ion()
     fig, ax = pl.subplots(nrows=2, ncols=3, figsize=(4*3, 4*2,))
     im = list()
-    im.append(ax[0, 0].imshow(truth.val, aspect='auto'))
+    im.append(ax[0, 0].imshow(signal(ground_truth).val, aspect='auto'))
     ax[0, 0].set_title('True Signal')
 
-    im.append(ax[0, 1].imshow(response.adjoint(response(sc.mean)).val, aspect='auto'))
+    im.append(ax[0, 1].imshow(R.adjoint(R(sc.mean)).val, aspect='auto'))
     ax[0, 1].set_title('Signal Response')
 
-    im.append(ax[0, 2].imshow(response.adjoint(data).val, aspect='auto'))
+    im.append(ax[0, 2].imshow(R.adjoint(data).val, aspect='auto'))
     ax[0, 2].set_title('Data')
 
     im.append(ax[1, 0].imshow(sc.mean.val, aspect='auto'))
     ax[1, 0].set_title('Posterior mean')
 
-    im.append(ax[1, 1].imshow(sc.var.val, aspect='auto'))
+    im.append(ax[1, 1].imshow(ift.sqrt(sc.var).val, aspect='auto'))
     ax[1, 1].set_title('Uncertainty')
 
     for s in amp_samples:
         ax[1, 2].plot(s.domain[0].k_lengths, s.val, color='lightgrey')
 
     amp_mean = sum(amp_samples)/(len(amp_samples))
-    ax[1, 2].plot(amp_mean.domain[0].k_lengths, amp_mean.val, color='black')
+    ax[1, 2].plot(amp_mean.domain[0].k_lengths,
+                  amp_mean.val, color='black', label='reconstruction')
+    ax[1, 2].plot(amp_mean.domain[0].k_lengths,
+                  A.force(ground_truth).val, color='b', label='ground truth')
+    ax[1, 2].legend()
     ax[1, 2].set_yscale('log')
     ax[1, 2].set_xscale('log')
     ax[1, 2].set_title('Power Spectra')
@@ -118,4 +123,5 @@ def plot_reconstruction_2d(data, truth, KL, signal, response, amplitude):
 
     pl.tight_layout()
     pl.savefig('reconstruction.png')
+    pl.close('all')
     return
