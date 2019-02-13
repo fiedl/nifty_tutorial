@@ -30,7 +30,7 @@ def plot(name,m,d,mock,samples=None):
     xmin = np.min(xcoord)
     xmax = np.max(xcoord)
     plt.axis((xmin,xmax,ymin,ymax))
-    plt.savefig(name+".pdf",dpi=300)
+    plt.savefig(name+".png",dpi=300)
     
 def power_plot(name,s,m,samples=None):
     plt.figure(figsize=(15,8))
@@ -47,4 +47,4 @@ def power_plot(name,s,m,samples=None):
                lgd = None
            plt.plot(ks,samples[i].to_global_data(),'k-',alpha=0.3,label=lgd)
     plt.legend()
-    plt.savefig(name+".pdf",dpi=300)
+    plt.savefig(name+".png",dpi=300)
