@@ -3,7 +3,7 @@ sys.path.append('../')
 import numpy as np
 import nifty5 as ift
 from responses import *
-from generate_data import generate_poisson_data
+from generate_data import generate_gaussian_data
 
 
 np.random.seed(42)
@@ -37,15 +37,16 @@ correlated_field = ift.CorrelatedField(position_space, A)
 
 ### SETTING UP SPECIFIC SCENARIO ####
 
-signal = correlated_field.sigmoid()
+signal = correlated_field.exp()
 
-R = psf_response(position_space)
+R = radial_tomography_response(position_space, lines_of_sight=256)
 signal_response = R(signal)
 
 data_space = R.target
-data = generate_poisson_data(signal_response)
+N = ift.ScalingOperator(5., data_space)
+data = generate_gaussian_data(signal_response, N)
 # Set up likelihood and information Hamiltonian
-likelihood = ift.PoissonianEnergy(data)(signal_response)
+likelihood = ift.GaussianEnergy(data,N)(signal_response)
 
 ######## SOLVING PROBLEM ########
 # Minimization parameters

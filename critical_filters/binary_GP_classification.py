@@ -3,7 +3,7 @@ sys.path.append('../')
 import numpy as np
 import nifty5 as ift
 from responses import *
-from generate_data import generate_poisson_data
+from generate_data import generate_bernoulli_data
 
 
 np.random.seed(42)
@@ -39,13 +39,13 @@ correlated_field = ift.CorrelatedField(position_space, A)
 
 signal = correlated_field.sigmoid()
 
-R = psf_response(position_space)
-signal_response = R(signal)
+R = checkerboard_response(position_space)
+signal_response = R(signal).clip(1e-5,1-1e-5)
 
 data_space = R.target
-data = generate_poisson_data(signal_response)
+data = generate_bernoulli_data(signal_response)
 # Set up likelihood and information Hamiltonian
-likelihood = ift.PoissonianEnergy(data)(signal_response)
+likelihood = ift.BernoulliEnergy(data)(signal_response)
 
 ######## SOLVING PROBLEM ########
 # Minimization parameters
