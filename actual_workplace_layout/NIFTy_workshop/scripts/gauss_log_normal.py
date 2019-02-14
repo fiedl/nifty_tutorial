@@ -1,10 +1,8 @@
-import sys
-sys.path.append('../')
-import numpy as np
-import nifty5 as ift
-from responses import *
+from responses import radial_tomography_response
 from generate_data import generate_gaussian_data
-from plotting_2d import *
+from plotting_aachen import plot_prior_samples_2d, plot_reconstruction_2d
+import nifty5 as ift
+import numpy as np
 
 
 np.random.seed(42)
@@ -32,9 +30,6 @@ dct = {
 }
 A = ift.SLAmplitude(**dct)
 correlated_field = ift.CorrelatedField(position_space, A)
-
-# interactive plotting
-# plotting correlated_field(ift.from_random('normal',correlated_field.target))
 
 ### SETTING UP SPECIFIC SCENARIO ####
 

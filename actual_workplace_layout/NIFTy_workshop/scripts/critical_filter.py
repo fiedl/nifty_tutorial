@@ -1,6 +1,6 @@
 import numpy as np
-
 import nifty5 as ift
+from plotting_aachen import plot_CF
 
 
 np.random.seed(42)
@@ -32,27 +32,27 @@ correlated_field = ift.CorrelatedField(space, A)
 # interactive plotting
 # plotting correlated_field(ift.from_random('normal',correlated_field.target))
 
+### SETTING UP SPECIFIC SCENARIO ####
 
 R = ift.GeometryRemover(space)
 data_space = R.target
 
-
 signal_response = R(correlated_field)
 
 
-# Set up likelihood and information Hamiltonian
+# Set up likelihood and load data
 N = ift.ScalingOperator(0.1, data_space)
 
-data = np.load('data_2.npy')
+data = np.load('../data_2.npy')
 data = ift.from_global_data(data_space, data)
 
 likelihood = ift.GaussianEnergy(mean=data, covariance=N)(signal_response)
 
 
 #### SOLVING PROBLEM ####
-ic_sampling = ift.GradientNormController(iteration_limit=60)
+ic_sampling = ift.GradientNormController(iteration_limit=100)
 ic_newton = ift.GradInfNormController(
-    name='Newton', tol=1e-6, iteration_limit=20)
+    name='Newton', tol=1e-6, iteration_limit=30)
 minimizer = ift.NewtonCG(ic_newton)
 
 H = ift.StandardHamiltonian(likelihood, ic_sampling)
@@ -61,37 +61,18 @@ initial_mean = ift.MultiField.full(H.domain, 0.)
 mean = initial_mean
 
 # number of samples used to estimate the KL
-N_samples = 5
+N_samples = 10
 
 # Draw new samples to approximate the KL five times
-for i in range(5):
+for i in range(10):
     # Draw new samples and minimize KL
     KL = ift.MetricGaussianKL(mean, H, N_samples)
     KL, convergence = minimizer(KL)
     mean = KL.position
 
-# Draw posterior samples
+# Draw posterior samples and plotting
 N_posterior_samples = 10
 KL = ift.MetricGaussianKL(mean, H, N_posterior_samples)
-sc = ift.StatCalculator()
-sc_pow = ift.StatCalculator()
-sky_samples = []
-powers = []
-for sample in KL.samples:
-    tmp = correlated_field(sample + KL.position)
-    sc.add(tmp)
-    power_samp = A.force(sample + KL.position)**2
-    sc_pow.add(power_samp)
-    sky_samples += [tmp]
-    powers += [power_samp]
 
-from plotting_aachen import plot,power_plot
-mock = np.load('signal_2.npy')
-mock = ift.from_global_data(space,mock)
-plot('results_signal',sc.mean,data,mock,sky_samples)
+plot_CF(KL, correlated_field, A ,data)
 
-
-
-from generate_data import mystery_spec
-actual_pow = ift.PS_field(A.target[0], mystery_spec)
-power_plot('results_power',actual_pow,sc_pow.mean,powers)

@@ -21,18 +21,15 @@ def generate_bernoulli_data(signal_response):
     data = np.random.binomial(1, rate)
     return ift.from_global_data(signal_response.target, data), ground_truth
 
-if __name__ == '__main__':
-    def prior_spec(k):
-        return 1 / (10. + k ** 2)
-
+def mystery_spec(k):
     m = 7
     b = 3
     a = 5
+    return a / ((m ** 2 - k ** 2) ** 2 + b ** 2 * k ** 2)
 
-
-    def mystery_spec(k):
-        return a / ((m ** 2 - k ** 2) ** 2 + b ** 2 * k ** 2)
-
+def prior_spec(k):
+    return 1 / (10. + k ** 2.5)
+if __name__ == '__main__':
 
     space = ift.RGSpace(256)
     harmonic_space = space.get_default_codomain()
