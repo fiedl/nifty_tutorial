@@ -14,7 +14,7 @@ data_space = R.target
 N = ift.ScalingOperator(0.1, data_space)
 
 data = np.load('data_1.npy')
-data = ift.from_global_data(data_space, data) 
+data = ift.from_global_data(data_space, data)
 
 def prior_spectrum(k):
     return 1/(10.+k**2)
@@ -30,12 +30,15 @@ D = ift.InversionEnabler(D_inv.inverse, IC, approximation=S)
 
 m = D(j)
 
+from plotting_aachen import plot
+
+truth = np.load('signal_1.npy')
+truth = ift.from_global_data(space, truth)
+plot('result',m,data,truth)
+
 S = ift.SandwichOperator.make(HT.adjoint, S_h)
 D = ift.WienerFilterCurvature(R, N , S, IC, IC).inverse
 N_samples = 10
 samples = [D.draw_sample()+m for i in range(N_samples)]
 
-plot = ift.Plot()
-plot.add([m, R.adjoint(data)] + samples, alpha = [1,1]+[0.3]*N_samples)
-plot.output(xsize = 10, ysize = 6, name='result.pdf')
-
+plot('result_with_unc',m,data,truth,samples)
