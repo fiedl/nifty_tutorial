@@ -2,16 +2,17 @@ import numpy as np
 import nifty5 as ift
 import pylab as plt
 
-def plot_WF(name,m,d,mock,samples=None):
+def plot_WF(name, mock, d, m=None,samples=None):
     plt.figure(figsize=(15,8))
-    dist = m.domain[0].distances[0]
-    npoints = m.domain[0].shape[0]
+    dist = mock.domain[0].distances[0]
+    npoints = mock.domain[0].shape[0]
     xcoord = np.arange(npoints, dtype=np.float64)*dist
     plt.plot(xcoord,d.to_global_data(),'kx',
              label="data")
     plt.plot(xcoord,mock.to_global_data(),'b-',
              label="ground truth")
-    plt.plot(xcoord,m.to_global_data(),'k-',
+    if m != None:
+        plt.plot(xcoord,m.to_global_data(),'k-',
              label="reconstruction")
     plt.title('reconstructed signal')
     plt.ylabel('value')
@@ -57,7 +58,7 @@ def plot_CF(KL, correlated_field, A ,data):
     actual_pow = ift.PS_field(A.target[0], mystery_spec)
 
     power_plot('critical_power', actual_pow, sc_pow.mean, powers)
-    plot_WF('critical_filter', sc.mean, data, ground_truth, sky_samples)
+    plot_WF('critical_filter', ground_truth, data, sc.mean, sky_samples)
     plt.close('all')
 
 

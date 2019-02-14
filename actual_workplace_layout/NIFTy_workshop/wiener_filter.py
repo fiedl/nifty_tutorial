@@ -1,5 +1,6 @@
 import nifty5 as ift
 import numpy as np
+from plotting_aachen import plot_WF
 
 np.random.seed(42)
 
