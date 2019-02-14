@@ -33,9 +33,6 @@ dct = {
 A = ift.SLAmplitude(**dct)
 correlated_field = ift.CorrelatedField(position_space, A)
 
-# interactive plotting
-# plotting correlated_field(ift.from_random('normal',correlated_field.target))
-
 ### SETTING UP SPECIFIC SCENARIO ####
 
 signal = correlated_field.exp()
