@@ -25,7 +25,6 @@ if __name__ == '__main__':
     def prior_spec(k):
         return 1 / (10. + k ** 2)
 
-
     m = 7
     b = 3
     a = 5
