@@ -1,13 +1,11 @@
 import numpy as np
 import nifty5 as ift
-from plotting_aachen import *
-from responses import *
-from generate_data import *
+from plotting_aachen import plot_CF
 
 
 np.random.seed(42)
 
-position_space = ift.RGSpace([256,256])
+position_space = ift.RGSpace(256)
 harmonic_space = position_space.get_default_codomain()
 
 HT = ift.HarmonicTransformOperator(harmonic_space, target=position_space)
@@ -25,7 +23,7 @@ dct = {
     # Power-law part of spectrum:
     'sm': -4,  # preferred power-law slope
     'sv': .6,  # low variance of power-law slope
-    'im':  -2,  # y-intercept mean, in-/decrease for more/less contrast
+    'im':  -6,  # y-intercept mean, in-/decrease for more/less contrast
     'iv': 2.   # y-intercept variance
 }
 A = ift.SLAmplitude(**dct)
@@ -36,19 +34,17 @@ correlated_field = ift.CorrelatedField(position_space, A)
 
 ### SETTING UP SPECIFIC SCENARIO ####
 
-# R = checkerboard_response(position_space)
 R = ift.GeometryRemover(position_space)
-
 data_space = R.target
-signal = correlated_field
+
 signal_response = R(correlated_field)
 
 
-# Set up likelihood and draw data from the model
+# Set up likelihood and load data
 N = ift.ScalingOperator(0.1, data_space)
-data, ground_truth = generate_gaussian_data(signal_response, N)
 
-plot_prior_samples_2d(5, signal, R, correlated_field, A, 'gauss', N=N)
+data = np.load('../data_2.npy')
+data = ift.from_global_data(data_space, data)
 
 likelihood = ift.GaussianEnergy(mean=data, covariance=N)(signal_response)
 
@@ -65,7 +61,7 @@ initial_mean = ift.MultiField.full(H.domain, 0.)
 mean = initial_mean
 
 # number of samples used to estimate the KL
-N_samples = 5
+N_samples = 10
 
 # Draw new samples to approximate the KL five times
 for i in range(10):
@@ -75,7 +71,8 @@ for i in range(10):
     mean = KL.position
 
 # Draw posterior samples and plotting
-N_posterior_samples = 30
+N_posterior_samples = 10
 KL = ift.MetricGaussianKL(mean, H, N_posterior_samples)
-plot_reconstruction_2d(data, ground_truth, KL, signal, R, A)
+
+plot_CF(KL, correlated_field, A ,data)
 

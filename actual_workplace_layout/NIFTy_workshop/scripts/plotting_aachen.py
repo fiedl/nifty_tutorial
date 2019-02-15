@@ -95,15 +95,12 @@ def plot_prior_samples_2d(n_samps, signal, R, correlated_field, A, likelihood, N
         sr = R.adjoint(R(signal(sample)))
         pow = A.force(sample)
         if likelihood == 'gauss':
-            ground_truth = ift.from_random('normal', signal_response.domain)
-            data = signal_response(ground_truth) + N.draw_sample()
+            data = signal_response(sample) + N.draw_sample()
         elif likelihood == 'poisson':
-            ground_truth = ift.from_random('normal', signal_response.domain)
-            rate = signal_response(ground_truth).val
+            rate = signal_response(sample).val
             data = ift.from_global_data(signal_response.target, np.random.poisson(rate))
         elif likelihood == 'bernoulli':
-            ground_truth = ift.from_random('normal', signal_response.domain)
-            rate = signal_response(ground_truth).val
+            rate = signal_response(sample).val
             data = ift.from_global_data(signal_response.target, np.random.binomial(1, rate))
         else:
             raise ValueError('likelihood type not implemented')
@@ -165,7 +162,7 @@ def plot_reconstruction_2d(data, ground_truth, KL, signal, R, A):
     ax[0, 0].set_title('true signal')
 
     im.append(ax[0, 1].imshow(R.adjoint(R(sc.mean)).val, aspect='auto'))
-    ax[0, 1].set_title('signal tesponse')
+    ax[0, 1].set_title('signal response')
 
     im.append(ax[0, 2].imshow(R.adjoint(data).val, aspect='auto'))
     ax[0, 2].set_title('data')
