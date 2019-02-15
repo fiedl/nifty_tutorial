@@ -13,7 +13,7 @@ R = ift.GeometryRemover(space)
 data_space = R.target
 N = ift.ScalingOperator(0.1, data_space)
 
-data = np.load('data_1.npy')
+data = np.load('../data_1.npy')
 data = ift.from_global_data(data_space, data)
 
 def prior_spectrum(k):
@@ -32,7 +32,7 @@ m = D(j)
 
 from plotting_aachen import plot
 
-truth = np.load('signal_1.npy')
+truth = np.load('../signal_1.npy')
 truth = ift.from_global_data(space, truth)
 plot('result',m,data,truth)
 
