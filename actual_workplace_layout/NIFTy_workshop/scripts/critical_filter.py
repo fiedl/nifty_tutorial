@@ -36,8 +36,8 @@ correlated_field = ift.CorrelatedField(position_space, A)
 
 ### SETTING UP SPECIFIC SCENARIO ####
 
-# R = checkerboard_response(position_space)
-R = ift.GeometryRemover(position_space)
+R = checkerboard_response(position_space)
+# R = ift.GeometryRemover(position_space)
 
 data_space = R.target
 signal = correlated_field

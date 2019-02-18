@@ -155,7 +155,6 @@ def plot_reconstruction_2d(data, ground_truth, KL, signal, R, A):
         sky_samples += [tmp]
         amp_samples += [pow]
 
-    plt.ion()
     fig, ax = plt.subplots(nrows=2, ncols=3, figsize=(4 * 3, 4 * 2,))
     im = list()
     im.append(ax[0, 0].imshow(signal(ground_truth).val, aspect='auto'))
