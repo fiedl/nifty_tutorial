@@ -1,6 +1,6 @@
 from responses import checkerboard_response
 from generate_data import generate_bernoulli_data
-from plotting_aachen import plot_prior_samples_2d, plot_reconstruction_2d
+from just_plot import plot_prior_samples_2d, plot_reconstruction_2d
 import numpy as np
 import nifty5 as ift
 

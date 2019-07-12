@@ -1,6 +1,6 @@
 import numpy as np
 import nifty5 as ift
-from plotting_aachen import *
+from just_plot import *
 from responses import *
 from generate_data import *
 
@@ -50,7 +50,8 @@ data, ground_truth = generate_gaussian_data(signal_response, N)
 
 plot_prior_samples_2d(5, signal, R, correlated_field, A, 'gauss', N=N)
 
-likelihood = ift.GaussianEnergy(mean=data, covariance=N)(signal_response)
+likelihood = ift.GaussianEnergy(mean=data,
+                                inverse_covariance=N.inverse)(signal_response)
 
 
 #### SOLVING PROBLEM ####

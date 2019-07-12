@@ -1,6 +1,6 @@
 from responses import exposure_response
 from generate_data import generate_poisson_data
-from plotting_aachen import plot_prior_samples_2d, plot_reconstruction_2d
+from just_plot import plot_prior_samples_2d, plot_reconstruction_2d
 import nifty5 as ift
 import numpy as np
 

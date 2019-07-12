@@ -1,6 +1,6 @@
 import numpy as np
 import nifty5 as ift
-from plotting_aachen import plot_CF
+from just_plot import plot_CF
 
 
 np.random.seed(42)
@@ -46,7 +46,8 @@ N = ift.ScalingOperator(0.1, data_space)
 data = np.load('../data_2.npy')
 data = ift.from_global_data(data_space, data)
 
-likelihood = ift.GaussianEnergy(mean=data, covariance=N)(signal_response)
+likelihood = ift.GaussianEnergy(mean=data,
+                                inverse_covariance=N.inverse)(signal_response)
 
 
 #### SOLVING PROBLEM ####

@@ -1,6 +1,6 @@
 import nifty5 as ift
 import numpy as np
-from plotting_aachen import plot_WF
+from just_plot import plot_WF
 
 np.random.seed(42)
 
@@ -23,7 +23,7 @@ harmonic_space = position_space.get_default_codomain()
 HT = ift.HartleyOperator(harmonic_space, target=position_space)
 
 def prior_spectrum(k):
-    return 1/(10.+k**2)
+    return 1/(10.+k**2.5)
 
 S_h = ift.create_power_operator(harmonic_space, prior_spectrum)
 S = HT @ S_h @ HT.adjoint
@@ -43,4 +43,4 @@ D = ift.WienerFilterCurvature(R, N , S, IC, IC).inverse
 N_samples = 10
 samples = [D.draw_sample()+m for i in range(N_samples)]
 
-plot_WF('result', m, data, ground_truth, samples)
+plot_WF('result', ground_truth, data, m=m, samples=samples)
