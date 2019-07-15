@@ -40,30 +40,3 @@ def generate_bernoulli_data(signal_response):
     rate = signal_response(ground_truth).val
     data = np.random.binomial(1, rate)
     return ift.from_global_data(signal_response.target, data), ground_truth
-
-
-def mystery_spec(k):
-    return 5/((7**2 - k**2)**2 + 3**2*k**2)
-
-
-def prior_spec(k):
-    return 1/(10. + k**2.5)
-
-
-if __name__ == '__main__':
-    space = ift.RGSpace(256)
-    harmonic_space = space.get_default_codomain()
-
-    HT = ift.HartleyOperator(harmonic_space, target=space)
-    N = ift.ScalingOperator(0.1, space)
-    S_k = ift.create_power_operator(harmonic_space, mystery_spec)
-    s = HT(S_k.draw_sample())
-    d = s + N.draw_sample()
-    np.save('../data_2.npy', d.to_global_data())
-    np.save('../signal_2.npy', s.to_global_data())
-
-    S_k = ift.create_power_operator(harmonic_space, prior_spec)
-    s = HT(S_k.draw_sample())
-    d = s + N.draw_sample()
-    np.save('../data_1.npy', d.to_global_data())
-    np.save('../signal_1.npy', s.to_global_data())

@@ -19,8 +19,8 @@ import numpy as np
 
 import nifty5 as ift
 import responses as resp
-from generate_data import generate_gaussian_data
-from just_plot import plot_prior_samples_2d, plot_reconstruction_2d
+from helpers import (generate_gaussian_data, plot_prior_samples_2d,
+                     plot_reconstruction_2d)
 
 np.random.seed(42)
 

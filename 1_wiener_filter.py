@@ -26,12 +26,23 @@ np.random.seed(42)
 
 position_space = ift.RGSpace(256)
 
+# Generate data and signal
+harmonic_space = position_space.get_default_codomain()
+HT = ift.HartleyOperator(harmonic_space, target=position_space)
+N = ift.ScalingOperator(0.1, position_space)
+S_k = ift.create_power_operator(harmonic_space, lambda k: 1/(10. + k**2.5))
+s = HT(S_k.draw_sample())
+d = s + N.draw_sample()
+np.save('data.npy', d.to_global_data())
+np.save('signal.npy', s.to_global_data())
+# End generate data and signal
+
 R = ift.GeometryRemover(position_space)
 data_space = R.target
-data = np.load('../data_1.npy')
+data = np.load('data.npy')
 data = ift.from_global_data(data_space, data)
 
-ground_truth = np.load('../signal_1.npy')
+ground_truth = np.load('signal.npy')
 ground_truth = ift.from_global_data(position_space, ground_truth)
 plot_WF('data', ground_truth, data)
 

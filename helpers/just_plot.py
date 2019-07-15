@@ -61,28 +61,6 @@ def plot_WF(name, mock, d, m=None, samples=None):
     plt.close('all')
 
 
-def plot_CF(KL, correlated_field, A, data):
-    sc = ift.StatCalculator()
-    sc_pow = ift.StatCalculator()
-    sky_samples = []
-    powers = []
-    for sample in KL.samples:
-        tmp = correlated_field(sample + KL.position)
-        sc.add(tmp)
-        power_samp = A.force(sample + KL.position)**2
-        sc_pow.add(power_samp)
-        sky_samples += [tmp]
-        powers += [power_samp]
-    ground_truth = np.load('../signal_2.npy')
-    ground_truth = ift.from_global_data(correlated_field.target, ground_truth)
-    from generate_data import mystery_spec
-    actual_pow = ift.PS_field(A.target[0], mystery_spec)
-
-    power_plot('critical_power', actual_pow, sc_pow.mean, powers)
-    plot_WF('critical_filter', ground_truth, data, sc.mean, sky_samples)
-    plt.close('all')
-
-
 def power_plot(name, s, m, samples=None):
     plt.figure(figsize=(15, 8))
     ks = s.domain[0].k_lengths
