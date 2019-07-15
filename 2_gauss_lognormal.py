@@ -27,7 +27,7 @@ position_space = ift.RGSpace([256, 256])
 harmonic_space = position_space.get_default_codomain()
 power_space = ift.PowerSpace(harmonic_space)
 
-# Building model
+# Build model
 HT = ift.HarmonicTransformOperator(harmonic_space, target=position_space)
 
 # Set up an amplitude operator for the field
@@ -47,8 +47,7 @@ dct = {
 A = ift.SLAmplitude(**dct)
 correlated_field = ift.CorrelatedField(position_space, A)
 
-### SETTING UP SPECIFIC SCENARIO ####
-
+# Set up specific scenario
 signal = correlated_field.exp()
 
 R = radial_tomography_response(position_space, lines_of_sight=256)
@@ -60,10 +59,10 @@ data, ground_truth = generate_gaussian_data(signal_response, N)
 # Set up likelihood and information Hamiltonian
 likelihood = ift.GaussianEnergy(data, N)(signal_response)
 
-### PLOT PRIOR SAMPLES ###
+# Plot prior samples
 plot_prior_samples_2d(5, signal, R, correlated_field, A, 'gauss', N=N)
 
-######## SOLVING PROBLEM ########
+# Solve problem
 # Minimization parameters
 ic_sampling = ift.GradientNormController(iteration_limit=100)
 ic_newton = ift.GradInfNormController(
@@ -74,7 +73,7 @@ H = ift.StandardHamiltonian(likelihood, ic_sampling)
 initial_mean = ift.MultiField.full(H.domain, 0.)
 mean = initial_mean
 
-# number of samples used to estimate the KL
+# Number of samples used to estimate the KL
 N_samples = 10
 
 # Draw new samples to approximate the KL five times
@@ -84,7 +83,7 @@ for i in range(5):
     KL, convergence = minimizer(KL)
     mean = KL.position
 
-### PLOT RESULTS ###
+# Plot results
 N_posterior_samples = 30
 KL = ift.MetricGaussianKL(mean, H, N_posterior_samples)
 plot_reconstruction_2d(data, ground_truth, KL, signal, R, A)

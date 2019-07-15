@@ -22,7 +22,7 @@ from helpers import plot_WF
 
 np.random.seed(42)
 
-# want to implement: m = Dj = (S^{-1} + R^T N^{-1} R)^{-1} R^T N^{-1} d
+# Want to implement: m = Dj = (S^{-1} + R^T N^{-1} R)^{-1} R^T N^{-1} d
 
 position_space = ift.RGSpace(256)
 
