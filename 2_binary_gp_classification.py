@@ -77,7 +77,7 @@ mean = initial_mean
 N_samples = 5
 
 # Draw new samples to approximate the KL five times
-for i in range(5):
+for _ in range(5):
     # Draw new samples and minimize KL
     KL = ift.MetricGaussianKL(mean, H, N_samples)
     KL, convergence = minimizer(KL)
