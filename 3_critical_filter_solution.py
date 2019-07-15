@@ -18,9 +18,8 @@
 import numpy as np
 
 import nifty5 as ift
-import responses as resp
-from helpers import (generate_gaussian_data, plot_prior_samples_2d,
-                     plot_reconstruction_2d)
+from helpers import (checkerboard_response, generate_gaussian_data,
+                     plot_prior_samples_2d, plot_reconstruction_2d)
 
 np.random.seed(42)
 
@@ -44,7 +43,7 @@ dct = {
 }
 A = ift.SLAmplitude(**dct)
 signal = ift.CorrelatedField(position_space, A)
-R = resp.checkerboard_response(position_space)
+R = checkerboard_response(position_space)
 
 data_space = R.target
 signal_response = R @ signal
