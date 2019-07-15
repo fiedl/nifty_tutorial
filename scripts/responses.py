@@ -1,5 +1,6 @@
-import nifty5 as ift
 import numpy as np
+
+import nifty5 as ift
 
 
 def checkerboard_response(position_space):

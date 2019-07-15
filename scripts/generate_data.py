@@ -1,11 +1,14 @@
 import numpy as np
+
 import nifty5 as ift
 
 np.random.seed(42)
 
+
 def generate_gaussian_data(signal_response, noise_covariance):
     ground_truth = ift.from_random('normal', signal_response.domain)
-    return signal_response(ground_truth) + noise_covariance.draw_sample(), ground_truth
+    return signal_response(
+        ground_truth) + noise_covariance.draw_sample(), ground_truth
 
 
 def generate_poisson_data(signal_response):
@@ -21,16 +24,16 @@ def generate_bernoulli_data(signal_response):
     data = np.random.binomial(1, rate)
     return ift.from_global_data(signal_response.target, data), ground_truth
 
+
 def mystery_spec(k):
-    m = 7
-    b = 3
-    a = 5
-    return a / ((m ** 2 - k ** 2) ** 2 + b ** 2 * k ** 2)
+    return 5/((7**2 - k**2)**2 + 3**2*k**2)
+
 
 def prior_spec(k):
-    return 1 / (10. + k ** 2.5)
-if __name__ == '__main__':
+    return 1/(10. + k**2.5)
 
+
+if __name__ == '__main__':
     space = ift.RGSpace(256)
     harmonic_space = space.get_default_codomain()
 
@@ -47,4 +50,3 @@ if __name__ == '__main__':
     d = s + N.draw_sample()
     np.save('../data_1.npy', d.to_global_data())
     np.save('../signal_1.npy', s.to_global_data())
-
