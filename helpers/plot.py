@@ -19,6 +19,7 @@ from itertools import product
 
 import numpy as np
 import pylab as plt
+from mpl_toolkits.axes_grid1 import make_axes_locatable
 
 import nifty5 as ift
 
@@ -154,8 +155,6 @@ def plot_prior_samples_2d(n_samps,
 
 
 def plot_reconstruction_2d(data, ground_truth, KL, signal, R, A):
-    from mpl_toolkits.axes_grid1 import make_axes_locatable
-
     sc = ift.StatCalculator()
     sky_samples = []
     amp_samples = []

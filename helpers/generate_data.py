@@ -19,8 +19,6 @@ import numpy as np
 
 import nifty5 as ift
 
-np.random.seed(42)
-
 
 def generate_gaussian_data(signal_response, noise_covariance):
     ground_truth = ift.from_random('normal', signal_response.domain)

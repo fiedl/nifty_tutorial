@@ -18,7 +18,7 @@
 import numpy as np
 
 import nifty5 as ift
-from just_plot import plot_WF
+from helpers import plot_WF
 
 np.random.seed(42)
 

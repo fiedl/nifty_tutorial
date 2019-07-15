@@ -18,9 +18,8 @@
 import numpy as np
 
 import nifty5 as ift
-from generate_data import generate_gaussian_data
-from just_plot import plot_prior_samples_2d, plot_reconstruction_2d
-from responses import radial_tomography_response
+from helpers import (generate_gaussian_data, plot_prior_samples_2d,
+                     plot_reconstruction_2d, radial_tomography_response)
 
 np.random.seed(42)
 

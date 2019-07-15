@@ -18,9 +18,8 @@
 import numpy as np
 
 import nifty5 as ift
-from generate_data import generate_bernoulli_data
-from just_plot import plot_prior_samples_2d, plot_reconstruction_2d
-from responses import checkerboard_response
+from helpers import (checkerboard_response, generate_bernoulli_data,
+                     plot_prior_samples_2d, plot_reconstruction_2d)
 
 np.random.seed(123)
 

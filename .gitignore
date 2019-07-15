@@ -1,4 +1,5 @@
 # custom
+*.npy
 setup.cfg
 .idea
 .DS_Store
