@@ -1,0 +1,27 @@
+image: $CONTAINER_TEST_IMAGE
+
+variables:
+  CONTAINER_TEST_IMAGE: gitlab-registry.mpcdf.mpg.de/$CI_PROJECT_PATH:$CI_BUILD_REF_NAME
+  OMP_NUM_THREADS: 1
+  GIT_SUBMODULE_STRATEGY: recursive
+
+stages:
+  - build_docker
+  - test
+
+build_docker:
+  image: docker:stable
+  stage: build_docker
+  script:
+    - docker login -u gitlab-ci-token -p $CI_BUILD_TOKEN gitlab-registry.mpcdf.mpg.de
+    - docker build -t $CONTAINER_TEST_IMAGE .
+    - docker push $CONTAINER_TEST_IMAGE
+
+tests:
+  stage: test
+  script:
+    - cd nifty && python3 setup.py install --user -f && cd ..
+    - for file in *.py; do python3 $file; done
+  artifacts:
+    paths:
+      - '*.png'
