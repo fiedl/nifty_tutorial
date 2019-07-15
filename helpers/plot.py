@@ -107,35 +107,35 @@ def plot_prior_samples_2d(n_samps,
         if likelihood == 'gauss':
             data = signal_response(sample) + N.draw_sample()
         elif likelihood == 'poisson':
-            rate = signal_response(sample).val
+            rate = signal_response(sample).to_global_data()
             data = ift.from_global_data(signal_response.target,
                                         np.random.poisson(rate))
         elif likelihood == 'bernoulli':
-            rate = signal_response(sample).val
+            rate = signal_response(sample).to_global_data()
             data = ift.from_global_data(signal_response.target,
                                         np.random.binomial(1, rate))
         else:
             raise ValueError('likelihood type not implemented')
         data = R.adjoint(data + 0.)
 
-        ax[s, 0].plot(pow.domain[0].k_lengths, pow.val)
+        ax[s, 0].plot(pow.domain[0].k_lengths, pow.to_global_data())
         ax[s, 0].set_yscale('log')
         ax[s, 0].set_xscale('log')
         ax[s, 0].get_xaxis().set_visible(False)
 
-        ax[s, 1].imshow(cf.val, aspect='auto')
+        ax[s, 1].imshow(cf.to_global_data(), aspect='auto')
         ax[s, 1].get_xaxis().set_visible(False)
         ax[s, 1].get_yaxis().set_visible(False)
 
-        ax[s, 2].imshow(sg.val, aspect='auto')
+        ax[s, 2].imshow(sg.to_global_data(), aspect='auto')
         ax[s, 2].get_xaxis().set_visible(False)
         ax[s, 2].get_yaxis().set_visible(False)
 
-        ax[s, 3].imshow(sr.val, aspect='auto')
+        ax[s, 3].imshow(sr.to_global_data(), aspect='auto')
         ax[s, 3].get_xaxis().set_visible(False)
         ax[s, 3].get_yaxis().set_visible(False)
 
-        ax[s, 4].imshow(data.val, cmap='viridis', aspect='auto')
+        ax[s, 4].imshow(data.to_global_data(), cmap='viridis', aspect='auto')
         ax[s, 4].get_xaxis().set_visible(False)
         ax[s, 4].yaxis.tick_right()
         ax[s, 4].get_yaxis().set_visible(False)
@@ -171,33 +171,37 @@ def plot_reconstruction_2d(data, ground_truth, KL, signal, R, A):
             4*2,
         ))
     im = list()
-    im.append(ax[0, 0].imshow(signal(ground_truth).val, aspect='auto'))
+    im.append(ax[0, 0].imshow(
+        signal(ground_truth).to_global_data(), aspect='auto'))
     ax[0, 0].set_title('true signal')
 
-    im.append(ax[0, 1].imshow(R.adjoint(R(sc.mean)).val, aspect='auto'))
+    im.append(ax[0, 1].imshow(
+        R.adjoint(R(sc.mean)).to_global_data(), aspect='auto'))
     ax[0, 1].set_title('signal response')
 
-    im.append(ax[0, 2].imshow(R.adjoint(data).val, aspect='auto'))
+    im.append(ax[0, 2].imshow(R.adjoint(data).to_global_data(), aspect='auto'))
     ax[0, 2].set_title('data')
 
-    im.append(ax[1, 0].imshow(sc.mean.val, aspect='auto'))
+    im.append(ax[1, 0].imshow(sc.mean.to_global_data(), aspect='auto'))
     ax[1, 0].set_title('posterior mean')
 
-    im.append(ax[1, 1].imshow(ift.sqrt(sc.var).val, aspect='auto'))
+    im.append(ax[1, 1].imshow(
+        ift.sqrt(sc.var).to_global_data(), aspect='auto'))
     ax[1, 1].set_title('standard deviation')
 
     for s in amp_samples:
-        ax[1, 2].plot(s.domain[0].k_lengths, s.val, color='lightgrey')
+        ax[1, 2].plot(
+            s.domain[0].k_lengths, s.to_global_data(), color='lightgrey')
 
     amp_mean = sum(amp_samples)/(len(amp_samples))
     ax[1, 2].plot(
         amp_mean.domain[0].k_lengths,
-        amp_mean.val,
+        amp_mean.to_global_data(),
         color='black',
         label='reconstruction')
     ax[1, 2].plot(
         amp_mean.domain[0].k_lengths,
-        A.force(ground_truth).val,
+        A.force(ground_truth).to_global_data(),
         color='b',
         label='ground truth')
     ax[1, 2].legend()

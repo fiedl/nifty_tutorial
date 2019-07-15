@@ -28,13 +28,13 @@ def generate_gaussian_data(signal_response, noise_covariance):
 
 def generate_poisson_data(signal_response):
     ground_truth = ift.from_random('normal', signal_response.domain)
-    rate = signal_response(ground_truth).val
+    rate = signal_response(ground_truth).to_global_data()
     data = np.random.poisson(rate)
     return ift.from_global_data(signal_response.target, data), ground_truth
 
 
 def generate_bernoulli_data(signal_response):
     ground_truth = ift.from_random('normal', signal_response.domain)
-    rate = signal_response(ground_truth).val
+    rate = signal_response(ground_truth).to_global_data()
     data = np.random.binomial(1, rate)
     return ift.from_global_data(signal_response.target, data), ground_truth
