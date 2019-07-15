@@ -38,3 +38,17 @@ def generate_bernoulli_data(signal_response):
     rate = signal_response(ground_truth).to_global_data()
     d = np.random.binomial(1, rate)
     return ift.from_global_data(signal_response.target, d), ground_truth
+
+
+def generate_wf_data(domain, spectrum):
+    harmonic_space = domain.get_default_codomain()
+    HT = ift.HartleyOperator(harmonic_space, target=domain)
+    N = ift.ScalingOperator(0.1, domain)
+    S_k = ift.create_power_operator(harmonic_space, spectrum)
+    s = HT(S_k.draw_sample()).to_global_data()
+    d = (s + N.draw_sample()).to_global_data()
+    return d, s
+
+
+def generate_mysterious_data(domain):
+    return generate_wf_data(domain, lambda k: 5/((7**2 - k**2)**2 + 3**2*k**2))
