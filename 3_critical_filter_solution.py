@@ -23,25 +23,25 @@ from helpers import (checkerboard_response, generate_gaussian_data,
 
 np.random.seed(42)
 
-position_space = ift.RGSpace([256, 256])
+position_space = ift.RGSpace(2*(256,))
 harmonic_space = position_space.get_default_codomain()
 HT = ift.HarmonicTransformOperator(harmonic_space, target=position_space)
 power_space = ift.PowerSpace(harmonic_space)
 
-# Set up an amplitude operator for the field
-dct = {
-    'target': power_space,
-    'n_pix': 64,  # 64 spectral bins
-    # Smoothness of spectrum
-    'a': 10,  # relatively high variance of spectral curvature
-    'k0': .2,  # quefrency mode below which cepstrum flattens
-    # Power-law part of spectrum
-    'sm': -4,  # preferred power-law slope
-    'sv': .6,  # low variance of power-law slope
-    'im': -2,  # y-intercept mean, in-/decrease for more/less contrast
-    'iv': 2.  # y-intercept variance
-}
-A = ift.SLAmplitude(**dct)
+# Set up generative model
+A = ift.SLAmplitude(
+    **{
+        'target': power_space,
+        'n_pix': 64,  # 64 spectral bins
+        # Smoothness of spectrum
+        'a': 10,  # relatively high variance of spectral curvature
+        'k0': .2,  # quefrency mode below which cepstrum flattens
+        # Power-law part of spectrum
+        'sm': -4,  # preferred power-law slope
+        'sv': .6,  # low variance of power-law slope
+        'im': -2,  # y-intercept mean, in-/decrease for more/less contrast
+        'iv': 2.  # y-intercept variance
+    })
 signal = ift.CorrelatedField(position_space, A)
 R = checkerboard_response(position_space)
 
@@ -57,12 +57,11 @@ plot_prior_samples_2d(5, signal, R, signal, A, 'gauss', N=N)
 likelihood = ift.GaussianEnergy(
     mean=data, inverse_covariance=N.inverse)(signal_response)
 
-# SOLVE INFERENCE PROBLEM
+# Solve inference problem
 ic_sampling = ift.GradientNormController(iteration_limit=100)
 ic_newton = ift.GradInfNormController(
     name='Newton', tol=1e-6, iteration_limit=30)
 minimizer = ift.NewtonCG(ic_newton)
-
 H = ift.StandardHamiltonian(likelihood, ic_sampling)
 
 initial_mean = ift.MultiField.full(H.domain, 0.)
