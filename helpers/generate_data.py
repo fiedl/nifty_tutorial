@@ -46,7 +46,7 @@ def generate_wf_data(domain, spectrum):
     N = ift.ScalingOperator(0.1, domain)
     S_k = ift.create_power_operator(harmonic_space, spectrum)
     s = HT(S_k.draw_sample()).to_global_data()
-    d = (s + N.draw_sample()).to_global_data()
+    d = s + N.draw_sample().to_global_data()
     return d, s
 
 
