@@ -76,4 +76,4 @@ for _ in range(10):
 # Draw posterior samples and plot
 N_posterior_samples = 30
 KL = ift.MetricGaussianKL(mean, H, N_posterior_samples)
-plot_reconstruction_2d(data, ground_truth, KL, signal, R, A)
+plot_reconstruction_2d(data, ground_truth, KL, signal, R, A, 'criticalfilter')
