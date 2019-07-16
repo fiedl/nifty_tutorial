@@ -199,7 +199,7 @@ def plot_reconstruction_2d(data, ground_truth, KL, signal, R, A, name):
         label='reconstruction')
     ax[1, 2].plot(
         amp_mean.domain[0].k_lengths,
-        A.force(ground_truth).to_global_data(),
+        A.force(ground_truth).to_global_data()**2,
         color='b',
         label='ground truth')
     ax[1, 2].legend()
