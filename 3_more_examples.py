@@ -20,9 +20,9 @@ import numpy as np
 import helpers as h
 import nifty5 as ift
 
-seeds = [123, 42, 42]
-name = ['bernoulli', 'gauss', 'poisson']
-for mode in [0, 1, 2]:
+seeds = [123, 42]
+name = ['bernoulli', 'poisson']
+for mode in [0, 1]:
     np.random.seed(seeds[mode])
 
     position_space = ift.RGSpace([256, 256])
@@ -50,12 +50,7 @@ for mode in [0, 1, 2]:
     if mode == 0:
         signal = correlated_field.sigmoid()
         R = h.checkerboard_response(position_space)
-    elif mode == 1:
-        signal = correlated_field.exp()
-        R = h.radial_tomography_response(position_space, lines_of_sight=256)
-        N = ift.ScalingOperator(5., R.target)
-        dct['N'] = N
-    elif mode == 2:
+    else:
         signal = correlated_field.exp()
         R = h.exposure_response(position_space)
     h.plot_prior_samples_2d(5, signal, R, correlated_field, A, name[mode],
@@ -65,10 +60,7 @@ for mode in [0, 1, 2]:
         signal_response = signal_response.clip(1e-5, 1 - 1e-5)
         data, ground_truth = h.generate_bernoulli_data(signal_response)
         likelihood = ift.BernoulliEnergy(data) @ signal_response
-    elif mode == 1:
-        data, ground_truth = h.generate_gaussian_data(signal_response, N)
-        likelihood = ift.GaussianEnergy(data, N) @ signal_response
-    elif mode == 2:
+    else:
         data, ground_truth = h.generate_poisson_data(signal_response)
         likelihood = ift.PoissonianEnergy(data) @ signal_response
 
@@ -80,7 +72,7 @@ for mode in [0, 1, 2]:
     H = ift.StandardHamiltonian(likelihood, ic_sampling)
     initial_mean = ift.MultiField.full(H.domain, 0.)
     mean = initial_mean
-    N_samples = 5 if mode in [0, 2] else 10
+    N_samples = 5
     for _ in range(5):
         # Draw new samples and minimize KL
         KL = ift.MetricGaussianKL(mean, H, N_samples)
