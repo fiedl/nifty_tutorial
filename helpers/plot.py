@@ -207,7 +207,7 @@ def plot_reconstruction_2d(data, ground_truth, KL, signal, R, A, name):
     ax[1, 2].set_xscale('log')
     ax[1, 2].set_title('power spectra')
 
-    for c, i, j in enumerate(product(range(2), range(3))):
+    for c, (i, j) in enumerate(product(range(2), range(3))):
         if i != 1 or j != 2:
             ax[i, j].get_xaxis().set_visible(False)
             ax[i, j].get_yaxis().set_visible(False)
