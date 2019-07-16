@@ -169,8 +169,9 @@ def plot_reconstruction_2d(data, ground_truth, KL, signal, R, A, name):
 
     fig, ax = plt.subplots(nrows=2, ncols=3, figsize=(4*3, 4*2))
     im = []
-    im.append(ax[0, 0].imshow(
-        signal(ground_truth).to_global_data(), aspect='auto'))
+    foo = signal(ground_truth).to_global_data()
+    vmin, vmax = np.min(foo), np.max(foo)
+    im.append(ax[0, 0].imshow(foo, aspect='auto', vmin=vmin, vmax=vmax))
     ax[0, 0].set_title('true signal')
 
     im.append(ax[0, 1].imshow(
@@ -180,7 +181,8 @@ def plot_reconstruction_2d(data, ground_truth, KL, signal, R, A, name):
     im.append(ax[0, 2].imshow(R.adjoint(data).to_global_data(), aspect='auto'))
     ax[0, 2].set_title('data')
 
-    im.append(ax[1, 0].imshow(sc.mean.to_global_data(), aspect='auto'))
+    im.append(ax[1, 0].imshow(
+        sc.mean.to_global_data(), aspect='auto', vmin=vmin, vmax=vmax))
     ax[1, 0].set_title('posterior mean')
 
     im.append(ax[1, 1].imshow(
