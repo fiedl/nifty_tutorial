@@ -6,7 +6,7 @@ RUN apt-get update && apt-get install -y \
     git python3-pip \
     python3-scipy \
     python3-matplotlib \
-  && pip3 install git+https://gitlab.mpcdf.mpg.de/mtr/pypocketfft.git@c959e87dd69918fd63ff971fa2eebea99388a43c \
+  && pip3 install git+https://gitlab.mpcdf.mpg.de/mtr/pypocketfft.git \
   && rm -rf /var/lib/apt/lists/*
 
 RUN cd /root \
