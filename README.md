@@ -20,7 +20,7 @@ order to get your results out of the container.
 - Install our Fouier transform package `pypocketfft`:
 
 ```
-$ pip3 install git+https://gitlab.mpcdf.mpg.de/mtr/pypocketfft.git
+$ pip3 install --user git+https://gitlab.mpcdf.mpg.de/mtr/pypocketfft.git
 ```
 
 - Clone this repository:
@@ -33,7 +33,7 @@ $ git clone --recursive https://gitlab.mpcdf.mpg.de/ift/nifty_tutorial.git
 
 ```
 $ cd nifty_tutorial/nifty
-$ python3 nifty_tutorial/nifty/setup.py install -f
+$ pip3 install --user .
 ```
 
 ## Docker
