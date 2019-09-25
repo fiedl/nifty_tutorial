@@ -14,7 +14,7 @@ order to get your results out of the container.
 
 ```
 # apt-get update
-# apt-get install git python3-pip python3-scipy python3-matplotlib 
+# apt-get install git python3-pip python3-scipy python3-matplotlib
 ```
 
 - Install our Fouier transform package `pypocketfft`:
@@ -38,19 +38,16 @@ $ pip3 install --user .
 
 ## Docker
 
-- Build the image:
+Build the image and login interactively:
 
 ```
 $ git clone https://gitlab.mpcdf.mpg.de/ift/nifty_tutorial.git
-# docker build -t niftytutorial .
+$ cd nifty_tutorial
+# docker-compose run tutorial
 ```
 
-- Start a container and mount your local folder `/mnt` into the folder `/mnt` in
-  the container. Do this only if you know what you are doing!
+The repository folder `nifty_tutorial` will be mounted into the `/tutorial` folder in the container.
 
-```
-# docker run -v /mnt:/mnt -it niftytutorial
-```
 
 ## Double-check the installation
 

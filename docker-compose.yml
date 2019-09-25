@@ -1,0 +1,22 @@
+version: '3'
+
+services:
+  tutorial:
+    build: .
+    volumes:
+      - ".:/tutorial"
+    stdin_open: true
+    tty: true
+    command:
+      - /bin/bash
+      - -c
+      - -v
+      - |
+        cd /tutorial
+        /usr/bin/git submodule sync
+        /usr/bin/git submodule foreach git pull
+        /usr/bin/git submodule update --init --recursive
+        cd nifty
+        /usr/bin/python3 setup.py install -f
+        cd /tutorial
+        /bin/bash
